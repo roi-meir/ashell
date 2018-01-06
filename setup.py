@@ -7,7 +7,7 @@ def readme():
 
 setup(
     name='ashell',
-    version='0.1',
+    version='0.2',
     packages=['ashell'],
     keywords='shell android ashell',
     url='',
