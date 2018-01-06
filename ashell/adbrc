@@ -1,0 +1,60 @@
+cd /data/local/tmp
+
+
+alias grep="grep --color=auto"
+alias ll="ls -l"
+
+export PATH=$PATH:/data/local/tmp/bin
+
+
+__busybox_path=`whence -p busybox`
+
+if [[ -n "$__busybox_path" ]]; then
+	export BUSYBOX_PATH="$__busybox_path"
+elif [[ -e "/data/local/tmp/busybox" ]]; then
+	export BUSYBOX_PATH="/data/local/tmp/busybox"
+fi
+
+## adb history ##
+if [[ -n " " ]]; then
+	HIST_FILE="/data/local/tmp/.adb_history"
+	touch $HIST_FILE
+	chmod 777 $HIST_FILE 2> /dev/null
+
+	_HIST_TMP_DIR="/data/local/tmp/.tmp"
+	mkdir -p $_HIST_TMP_DIR
+	chmod 777 $_HIST_TMP_DIR 2> /dev/null
+
+	# Our code in PS1 run in a new shell so we save the last command on tmp file
+	# In bash we have PROMPT_COMMAND but not in mksh
+	TMP_HIST_FILE="$_HIST_TMP_DIR/.tmp_adb_history_$$"
+	touch $TMP_HIST_FILE
+	chmod 777 $TMP_HIST_FILE 2> /dev/null
+
+	# load old history 
+	while IFS="" read -r line || [[ -n "$line" ]]; do
+		echo "$line" > $TMP_HIST_FILE
+		read -s -r line < $TMP_HIST_FILE
+	done < $HIST_FILE
+
+	save_history () {
+		read -r old_history_line < $TMP_HIST_FILE
+		new_history_line=`fc -ln -1`
+		read -r new_history_line <<MY_EOF
+            $new_history_line
+MY_EOF
+
+		#new_history_line=`fc -ln -1 | xargs echo`
+		if [[ -z "$old_history_line" && -n "$new_history_line" ]]; then
+			# fist run
+			echo "$new_history_line" > $TMP_HIST_FILE
+		elif [[ "$old_history_line" != "$new_history_line" && -n "$new_history_line" ]]; then
+			echo "$new_history_line" > $TMP_HIST_FILE
+			echo "$new_history_line" >> $HIST_FILE
+		fi
+	}
+
+	export PS1='`save_history`'$PS1
+else
+	echo "No busybox, No history"
+fi
