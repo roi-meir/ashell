@@ -39,6 +39,7 @@ Please report bugs, issues, feature requests, etc. on `GitHub <https://github.co
 Links
 -----
 * `Project home page (GitHub) <https://github.com/roi-meir/ashell>`_
+* `Package distribution (PyPI) <https://pypi.python.org/pypi/ashell>`_
 
 License
 -------
