@@ -44,7 +44,7 @@ def push_adbrc_to_device(child, serial=None):
 
 def print_default():
     with open(DEFAULT_ADBRC_PATH, 'rb') as f:
-        print f.read()
+        print(f.read())
 
 
 def main():
